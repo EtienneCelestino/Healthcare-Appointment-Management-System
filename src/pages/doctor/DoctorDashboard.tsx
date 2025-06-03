@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import SidebarLayout from '../../components/layout/SidebarLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
+import Button from '../../components/ui/Button';
 import StatsCard from '../../components/dashboard/StatsCard';
 import { mockAppointments, getDoctorById } from '../../data/mockData';
 import { useAuth } from '../../contexts/AuthContext';

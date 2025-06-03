@@ -66,21 +66,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check for saved user on mount
   useEffect(() => {
-    console.log('AuthProvider - Iniciando verificação de usuário salvo');
     const savedUser = localStorage.getItem('user');
-    console.log('AuthProvider - Usuário salvo:', savedUser);
-    
     if (savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);
-        console.log('AuthProvider - Usuário parseado:', parsedUser);
         setUser(parsedUser);
       } catch (error) {
-        console.error('AuthProvider - Erro ao fazer parse do usuário:', error);
+        console.error('Error parsing saved user:', error);
         localStorage.removeItem('user');
       }
-    } else {
-      console.log('AuthProvider - Nenhum usuário encontrado no localStorage');
     }
     setIsLoading(false);
   }, []);
@@ -88,7 +82,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      console.log('AuthProvider - Iniciando login para:', email);
       setIsLoading(true);
       
       // In a real app, this would be an API call
@@ -100,16 +93,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
       
       if (!foundUser) {
-        console.log('AuthProvider - Usuário não encontrado');
         throw new Error('Invalid email or password');
       }
       
       const { password: _, ...userWithoutPassword } = foundUser;
-      console.log('AuthProvider - Login bem sucedido:', userWithoutPassword);
       setUser(userWithoutPassword);
       localStorage.setItem('user', JSON.stringify(userWithoutPassword));
     } catch (error) {
-      console.error('AuthProvider - Erro no login:', error);
       throw error;
     } finally {
       setIsLoading(false);

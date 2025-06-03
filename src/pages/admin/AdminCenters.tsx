@@ -8,10 +8,7 @@ import {
   Activity,
   Search,
   Plus,
-  Settings,
-  Map,
-  MapPin,
-  Stethoscope
+  Settings
 } from 'lucide-react';
 import SidebarLayout from '../../components/layout/SidebarLayout';
 // import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../../components/ui/Card';
@@ -22,8 +19,6 @@ import { HealthcareCenter } from '../../types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/Select';
-import { CentrosSaudeList } from '../../components/CentrosSaude/CentrosSaudeList';
-import { CentroSaudeForm } from '../../components/CentrosSaude/CentroSaudeForm';
 
 // Define sidebar items for admin
 const adminSidebarItems = [
@@ -33,56 +28,35 @@ const adminSidebarItems = [
     icon: <Home size={20} />
   },
   {
-    title: 'Usuários',
-    path: '/admin/usuarios',
-    icon: <Users size={20} />
-  },
-  {
-    title: 'Províncias',
-    path: '/admin/provincias',
-    icon: <Map size={20} />
-  },
-  {
-    title: 'Municípios',
-    path: '/admin/municipios',
-    icon: <MapPin size={20} />
-  },
-  {
     title: 'Centros de Saúde',
-    path: '/admin/centros-saude',
+    path: '/admin/centers',
     icon: <Building2 size={20} />
   },
   {
-    title: 'Serviços',
-    path: '/admin/servicos',
-    icon: <Stethoscope size={20} />
-  },
-  {
-    title: 'Profissionais',
-    path: '/admin/profissionais',
+    title: 'Médicos',
+    path: '/admin/doctors',
     icon: <UserCog size={20} />
   },
   {
     title: 'Pacientes',
-    path: '/admin/pacientes',
+    path: '/admin/patients',
     icon: <Users size={20} />
   },
   {
-    title: 'Agendamentos',
-    path: '/admin/agendamentos',
+    title: 'Consultas',
+    path: '/admin/appointments',
     icon: <Calendar size={20} />
   },
   {
     title: 'Configurações',
-    path: '/admin/configuracoes',
+    path: '/admin/settings',
     icon: <Settings size={20} />
   }
 ];
-
-export const AdminCenters: React.FC = () => {
+const AdminCenters: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [selectedCentroId, setSelectedCentroId] = useState<number | undefined>();
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   
   // Filter centers based on search term
   const filteredCenters = mockCenters.filter(center => 
@@ -91,26 +65,16 @@ export const AdminCenters: React.FC = () => {
     center.services.some(service => service.toLowerCase().includes(searchTerm.toLowerCase()))
   );
   
-  const handleAddNew = () => {
-    setSelectedCentroId(undefined);
-    setShowForm(true);
+  // Handle edit center
+  const handleEditCenter = (center: HealthcareCenter) => {
+    setShowEditModal(true);
   };
-
-  const handleEdit = (id: number) => {
-    setSelectedCentroId(id);
-    setShowForm(true);
+  
+  // Handle add new center
+  const handleAddCenter = () => {
+    setShowAddModal(true);
   };
-
-  const handleFormSuccess = () => {
-    setShowForm(false);
-    setSelectedCentroId(undefined);
-  };
-
-  const handleFormCancel = () => {
-    setShowForm(false);
-    setSelectedCentroId(undefined);
-  };
-
+  
   return (
     <SidebarLayout 
       items={adminSidebarItems} 
@@ -131,15 +95,13 @@ export const AdminCenters: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="min-w-[250px]"
             />
-            {!showForm && (
-              <Button 
-                variant="default" 
-                onClick={handleAddNew}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Center
-              </Button>
-            )}
+            <Button 
+              variant="default" 
+              onClick={handleAddCenter}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Center
+            </Button>
           </div>
         </div>
         
@@ -193,7 +155,7 @@ export const AdminCenters: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(center.id)}>Editar</Button>
+                      <Button variant="outline" size="sm" onClick={() => handleEditCenter(center)}>Editar</Button>
                       <Button variant="destructive" size="sm">Desativar</Button>
                     </div>
                   </TableCell>
@@ -209,40 +171,44 @@ export const AdminCenters: React.FC = () => {
             <Building2 size={48} className="text-gray-300 mb-4" />
             <h3 className="text-lg font-medium text-gray-700">No Centers Found</h3>
             <p className="text-gray-500 mt-1">Try adjusting your search or add a new center</p>
-            {!showForm && (
-              <Button 
-                variant="default" 
-                onClick={handleAddNew}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Center
-              </Button>
-            )}
+            <Button 
+              variant="default" 
+              onClick={handleAddCenter}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Center
+            </Button>
           </div>
         )}
       </div>
       
-      {showForm && (
+      {/* Add/Edit Modal would be implemented here */}
+      {/* This is a placeholder for the actual implementation */}
+      {(showAddModal || showEditModal) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl">
             <div className="p-6 border-b">
               <h3 className="text-xl font-semibold text-gray-800">
-                {selectedCentroId ? 'Editar Centro de Saúde' : 'Novo Centro de Saúde'}
+                {showAddModal ? 'Add New Center' : 'Edit Center'}
               </h3>
             </div>
             <div className="p-6">
-              <CentroSaudeForm
-                centroId={selectedCentroId}
-                onSuccess={handleFormSuccess}
-                onCancel={handleFormCancel}
-              />
+              <p className="text-gray-500">
+                Form would be implemented here with fields for name, address, services, etc.
+              </p>
             </div>
             <div className="p-6 border-t bg-gray-50 flex justify-end space-x-3">
               <Button 
                 variant="outline" 
-                onClick={handleFormCancel}
+                onClick={() => {
+                  setShowAddModal(false);
+                  setShowEditModal(false);
+                }}
               >
                 Cancel
+              </Button>
+              <Button>
+                {showAddModal ? 'Add Center' : 'Save Changes'}
               </Button>
             </div>
           </div>

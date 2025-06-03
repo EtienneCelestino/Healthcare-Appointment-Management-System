@@ -10,11 +10,6 @@ import AdminDoctors from './pages/admin/AdminDoctors';
 import AdminPatients from './pages/admin/AdminPatients';
 import AdminAppointments from './pages/admin/AdminAppointments';
 import AdminSettings from './pages/admin/AdminSettings';
-import AdminProvincias from './pages/admin/AdminProvincias';
-import AdminMunicipios from './pages/admin/AdminMunicipios';
-import AdminServices from './pages/admin/AdminServices';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminProfessionals from './pages/admin/AdminProfessionals';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import DoctorAppointments from './pages/doctor/DoctorAppointments';
 import DoctorAvailability from './pages/doctor/DoctorAvailability';
@@ -33,58 +28,21 @@ const ProtectedRoute: React.FC<{
   children: React.ReactNode;
   allowedRoles?: ('admin' | 'doctor' | 'patient')[];
 }> = ({ children, allowedRoles }) => {
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return <div>Carregando...</div>;
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" />;
   }
 
   return <>{children}</>;
-};
-
-// Public route component
-const PublicRoute: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Carregando...</div>;
-  }
-
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <>{children}</>;
-};
-
-// Root route component
-const RootRoute: React.FC = () => {
-  const { user } = useAuth();
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  switch (user.role) {
-    case 'admin':
-      return <Navigate to="/admin/dashboard" replace />;
-    case 'doctor':
-      return <Navigate to="/doctor/dashboard" replace />;
-    case 'patient':
-      return <Navigate to="/patient/dashboard" replace />;
-    default:
-      return <Navigate to="/login" replace />;
-  }
 };
 
 function App() {
@@ -93,21 +51,9 @@ function App() {
       <Router>
         <Routes>
           {/* Auth Routes */}
-          <Route path="/login" element={
-            <PublicRoute>
-              <LoginPage />
-            </PublicRoute>
-          } />
-          <Route path="/register" element={
-            <PublicRoute>
-              <RegisterPage />
-            </PublicRoute>
-          } />
-          <Route path="/forgot-password" element={
-            <PublicRoute>
-              <ForgotPasswordPage />
-            </PublicRoute>
-          } />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={
@@ -115,47 +61,27 @@ function App() {
               <AdminDashboard />
             </ProtectedRoute>
           } />
-          <Route path="/admin/users" element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminUsers />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/provincias" element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminProvincias />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/municipios" element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminMunicipios />
-            </ProtectedRoute>
-          } />
           <Route path="/admin/centers" element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminCenters />
             </ProtectedRoute>
           } />
-          <Route path="/admin/servicos" element={
+          <Route path="/admin/doctors" element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminServices />
+              <AdminDoctors />
             </ProtectedRoute>
           } />
-          <Route path="/admin/professionals" element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminProfessionals />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/pacientes" element={
+          <Route path="/admin/patients" element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminPatients />
             </ProtectedRoute>
           } />
-          <Route path="/admin/agendamentos" element={
+          <Route path="/admin/appointments" element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminAppointments />
             </ProtectedRoute>
           } />
-          <Route path="/admin/configuracoes" element={
+          <Route path="/admin/settings" element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminSettings />
             </ProtectedRoute>
@@ -220,12 +146,11 @@ function App() {
             </ProtectedRoute>
           } />
 
-          {/* Root route */}
-          <Route path="/" element={
-            <ProtectedRoute>
-              <RootRoute />
-            </ProtectedRoute>
-          } />
+          {/* Redirect root to login */}
+          <Route path="/" element={<Navigate to="/login" />} />
+          
+          {/* Public Routes */}
+          <Route path="/home" element={<PatientHome />} />
           
           {/* 404 Not Found */}
           <Route path="*" element={<NotFoundPage />} />
